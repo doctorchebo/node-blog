@@ -30,6 +30,32 @@ const blogs_details = (req, res) => {
     .catch((err) => res.status(404).render("404", { title: "Blog not found" }));
 };
 
+const blogs_edit_get = (req, res) => {
+  const { id } = req.params;
+  Blog.findById(id).then((result) => {
+    res.render("blogs/edit", { title: "Edit Blog", blog: result });
+  });
+};
+
+const blogs_edit_put = (req, res) => {
+  console.log("editing blog..");
+  const id = req.params.id;
+  const { title, snippet, body } = req.body;
+  Blog.findById(id)
+    .then((result) => {
+      const blog = result;
+      blog.title = title;
+      blog.snippet = snippet;
+      blog.body = body;
+      blog.save().then((result) => {
+        res.redirect("/");
+      });
+    })
+    .catch((err) => {
+      res.status(404).render("404", { title: "Blog not found" });
+    });
+};
+
 const blogs_delete = (req, res) => {
   const id = req.params.id;
   Blog.findByIdAndDelete(id).then((result) => {
@@ -42,5 +68,7 @@ module.exports = {
   blogs_create_get,
   blogs_create_post,
   blogs_details,
+  blogs_edit_get,
+  blogs_edit_put,
   blogs_delete,
 };
